@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wins</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6db56d;
+            --background-color: #f5f7fa;
+            --card-color: #ffffff;
+            --text-color: #333333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-style: italic;
+        }
+
+        .win-form {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .date-selector {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="date"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .win-inputs {
+            margin-bottom: 20px;
+        }
+
+        .win-input-group {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .win-input-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+            min-height: 60px;
+            box-sizing: border-box;
+        }
+
+        .win-input-group .remove-win {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.7;
+        }
+
+        .win-input-group .remove-win:hover {
+            opacity: 1;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+
+        .add-win-btn {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .add-win-btn:hover {
+            background-color: #5da05d;
+        }
+
+        .save-btn {
+            background-color: var(--primary-color);
+            color: white;
+            flex-grow: 1;
+        }
+
+        .save-btn:hover {
+            background-color: #3a5a80;
+        }
+
+        .wins-history {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .day-entry {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+
+        .day-entry:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .day-date {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.2em;
+        }
+
+        .win-count {
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 0.9em;
+        }
+
+        .win-item {
+            background-color: #f9f9f9;
+            border-left: 4px solid var(--secondary-color);
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .empty-history {
+            text-align: center;
+            padding: 40px 0;
+            color: #666;
+            font-style: italic;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+        }
+
+        /* Dark mode toggle */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5em;
+        }
+
+        /* Dark theme */
+        body.dark-theme {
+            --primary-color: #7492b8;
+            --secondary-color: #8bc98b;
+            --background-color: #1a1a2e;
+            --card-color: #252541;
+            --text-color: #e6e6e6;
+        }
+
+        body.dark-theme .win-item {
+            background-color: #2a2a4a;
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle">🌓</button>
+    <div class="container">
+        <header>
+            <h1>My Wins</h1>
+            <p class="subtitle">Track your daily achievements, big and small</p>
+        </header>
+
+        <section class="win-form">
+            <div class="date-selector">
+                <label for="winDate">Date:</label>
+                <input type="date" id="winDate">
+            </div>
+
+            <div class="win-inputs" id="winInputsContainer">
+                <!-- Win input fields will be added here -->
+                <div class="win-input-group">
+                    <textarea placeholder="What's your win today?"></textarea>
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button class="add-win-btn" id="addWinBtn">Another Win!</button>
+                <button class="save-btn" id="saveWinsBtn">Save My Wins</button>
+            </div>
+        </section>
+
+        <section class="wins-history" id="winsHistory">
+            <!-- History will be populated here -->
+            <div class="empty-history" id="emptyHistory">
+                No wins recorded yet. Add your first win above!
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default date to today
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            document.getElementById('winDate').value = formattedDate;
+
+            // Load wins from local storage
+            loadWins();
+
+            // Event listeners
+            document.getElementById('addWinBtn').addEventListener('click', addWinInput);
+            document.getElementById('saveWinsBtn').addEventListener('click', saveWins);
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+            // Add the first win input
+            if (document.querySelectorAll('.win-input-group').length === 0) {
+                addWinInput();
+            }
+        });
+
+        function addWinInput() {
+            const container = document.getElementById('winInputsContainer');
+            const winGroup = document.createElement('div');
+            winGroup.className = 'win-input-group';
+            
+            const textarea = document.createElement('textarea');
+            textarea.placeholder = "What's your win today?";
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-win';
+            removeBtn.textContent = '×';
+            removeBtn.addEventListener('click', function() {
+                container.removeChild(winGroup);
+            });
+            
+            winGroup.appendChild(textarea);
+            winGroup.appendChild(removeBtn);
+            container.appendChild(winGroup);
+            
+            // Focus the new textarea
+            textarea.focus();
+        }
+
+        function saveWins() {
+            const date = document.getElementById('winDate').value;
+            const winInputs = document.querySelectorAll('.win-input-group textarea');
+            
+            // Create an array of non-empty win texts
+            const winTexts = Array.from(winInputs)
+                .map(input => input.value.trim())
+                .filter(text => text.length > 0);
+            
+            if (winTexts.length === 0) {
+                alert('Please enter at least one win before saving.');
+                return;
+            }
+            
+            // Get existing wins from localStorage
+            let allWins = JSON.parse(localStorage.getItem('myWins')) || {};
+            
+            // Add or append wins for this date
+            if (allWins[date]) {
+                allWins[date] = allWins[date].concat(winTexts);
+            } else {
+                allWins[date] = winTexts;
+            }
+            
+            // Save back to localStorage
+            localStorage.setItem('myWins', JSON.stringify(allWins));
+            
+            // Clear input fields except for the first one
+            const inputGroups = document.querySelectorAll('.win-input-group');
+            for (let i = inputGroups.length - 1; i >= 1; i--) {
+                inputGroups[i].remove();
+            }
+            document.querySelector('.win-input-group textarea').value = '';
+            
+            // Reload the wins display
+            loadWins();
+            
+            // Show confirmation
+            alert('Your wins have been saved!');
+        }
+
+        function loadWins() {
+            const historyContainer = document.getElementById('winsHistory');
+            const emptyHistory = document.getElementById('emptyHistory');
+            
+            // Get wins from localStorage
+            const allWins = JSON.parse(localStorage.getItem('myWins')) || {};
+            const dates = Object.keys(allWins).sort().reverse(); // Sort dates in descending order
+            
+            // Clear previous history
+            historyContainer.innerHTML = '';
+            
+            if (dates.length === 0) {
+                historyContainer.appendChild(emptyHistory);
+                return;
+            }
+            
+            // Add each day's wins
+            dates.forEach(date => {
+                const wins = allWins[date];
+                const dayEntry = createDayEntry(date, wins);
+                historyContainer.appendChild(dayEntry);
+            });
+        }
+
+        function createDayEntry(date, wins) {
+            const dayEntry = document.createElement('div');
+            dayEntry.className = 'day-entry';
+            
+            // Create header with date and win count
+            const dayHeader = document.createElement('div');
+            dayHeader.className = 'day-header';
+            
+            const formattedDate = formatDate(date);
+            const dayDate = document.createElement('div');
+            dayDate.className = 'day-date';
+            dayDate.textContent = formattedDate;
+            
+            const winCount = document.createElement('div');
+            winCount.className = 'win-count';
+            winCount.textContent = wins.length + (wins.length === 1 ? ' win' : ' wins');
+            
+            dayHeader.appendChild(dayDate);
+            dayHeader.appendChild(winCount);
+            dayEntry.appendChild(dayHeader);
+            
+            // Add each win
+            wins.forEach(win => {
+                const winItem = document.createElement('div');
+                winItem.className = 'win-item';
+                winItem.textContent = win;
+                dayEntry.appendChild(winItem);
+            });
+            
+            return dayEntry;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString(undefined, { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-theme');
+            const isDark = document.body.classList.contains('dark-theme');
+            localStorage.setItem('darkTheme', isDark ? 'true' : 'false');
+        }
+
+        // Check for saved theme preference
+        if (localStorage.getItem('darkTheme') === 'true') {
+            document.body.classList.add('dark-theme');
+        }
+    </script>
+</body>
+</html>
